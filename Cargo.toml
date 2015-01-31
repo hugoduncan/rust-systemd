@@ -1,0 +1,14 @@
+[package]
+name = "systemd-dbus"
+version = "0.0.1"
+description = "Crate for systemd commands via DBus. Experimental."
+authors = ["Hugo Duncan <hugo@hugoduncan.org>"]
+keywords = ["systemd", "dbus"]
+repository = "https://github.com/hugoduncan/rust-systemd"
+documentation = "http://hugoduncan.github.io/rust-systemd/systemd-dbus/index.html"
+readme = "README.md"
+license = "Apache-2.0"
+
+[dependencies]
+rustc-serialize = "0.2.12"
+dbus-rs = "0.0.4"
