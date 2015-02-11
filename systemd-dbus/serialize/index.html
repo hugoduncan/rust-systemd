@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `serialize` mod in crate `systemd-dbus`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, serialize">
+
+    <title>systemd-dbus::serialize - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>systemd-dbus</a></p><div class='block mod'><h2>Modules</h2><a class='mod current' href='../serialize/index.html' title='Serialization support for data over DBus.'>serialize</a></div><div class='block struct'><h2>Structs</h2><a class='struct ' href='../struct.Connection.html' title='Main type representing a connection to systemd via Dbus.'>Connection</a><a class='struct ' href='../struct.Job.html' title='Systemd Job information'>Job</a><a class='struct ' href='../struct.UnitAux.html' title='Unit properties'>UnitAux</a><a class='struct ' href='../struct.UnitFile.html' title='Systemd unit file information'>UnitFile</a><a class='struct ' href='../struct.UnitFileChange.html' title='Systemd unit file change information'>UnitFileChange</a><a class='struct ' href='../struct.UnitFileChanges.html' title='Systemd unit file changes'>UnitFileChanges</a><a class='struct ' href='../struct.UnitProperty.html' title='A Unit property'>UnitProperty</a><a class='struct ' href='../struct.UnitStatus.html' title='Unit status returned from systemd.'>UnitStatus</a></div><div class='block enum'><h2>Enums</h2><a class='enum ' href='../enum.Match.html' title='Match rules for notifications'>Match</a><a class='enum ' href='../enum.SystemdError.html' title='Errors that can arise on systemd DBus operations.'>SystemdError</a></div><div class='block fn'><h2>Functions</h2><a class='fn ' href='../fn.rule_string.html' title='Return a rule string for a sequence of matches'>rule_string</a></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>systemd-dbus</a>::<wbr><a class='mod' href=''>serialize</a><wbr></span><span class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-13' href='../../src/systemd-dbus/serialize.rs.html#1-631'>[src]</a></span></h1>
+<div class='docblock'><p>Serialization support for data over DBus.</p>
+
+<p>Serialize between Rustc Encodable and Decodable types, and
+Vec<a href="dbus::MessageItem">dbus::MessageItem</a>.</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.Decoder.html'
+                               title='systemd-dbus::serialize::Decoder'>Decoder</a></td>
+                        <td class='docblock short'><p>Decoder</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.Encoder.html'
+                               title='systemd-dbus::serialize::Encoder'>Encoder</a></td>
+                        <td class='docblock short'><p>Encoder object, to encode to Vec<MessageItem></p>
+</td>
+                    </tr>
+                </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='enum' href='enum.DecoderError.html'
+                               title='systemd-dbus::serialize::DecoderError'>DecoderError</a></td>
+                        <td class='docblock short'><p>Error type for serialization</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='enum' href='enum.EncoderError.html'
+                               title='systemd-dbus::serialize::EncoderError'>EncoderError</a></td>
+                        <td class='docblock short'><p>Encoder Error Type</p>
+</td>
+                    </tr>
+                </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.decode.html'
+                               title='systemd-dbus::serialize::decode'>decode</a></td>
+                        <td class='docblock short'><p>Convenience function to decode a vector of MessageItem</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.encode.html'
+                               title='systemd-dbus::serialize::encode'>encode</a></td>
+                        <td class='docblock short'><p>Utility function to encode an Encodable instance to a MessageItem</p>
+</td>
+                    </tr>
+                </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.DecodeResult.html'
+                               title='systemd-dbus::serialize::DecodeResult'>DecodeResult</a></td>
+                        <td class='docblock short'><p>Result type for decoding dbus messages</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.EncodeResult.html'
+                               title='systemd-dbus::serialize::EncodeResult'>EncodeResult</a></td>
+                        <td class='docblock short'><p>Result type for encoder functions.</p>
+</td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "systemd-dbus";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>
