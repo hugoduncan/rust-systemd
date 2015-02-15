@@ -18,12 +18,14 @@
 //! Vec<dbus::MessageItem>.
 
 use std::{num,string};
+use std::ascii::AsciiExt;
 
 use dbus::MessageItem;
 use rustc_serialize::{self, Decodable, Encodable};
 
 use self::DecoderError::*;
 use self::EncoderError::*;
+
 
 /// Error type for serialization
 #[derive(Clone, PartialEq, Debug)]
@@ -486,46 +488,57 @@ impl rustc_serialize::Encoder for Encoder {
         self.emit(MessageItem::Str(v.to_string()))
     }
 
-    fn emit_enum<F>(&mut self, _name: &str, _: F) -> EncodeResult<()> where
+    fn emit_enum<F>(&mut self, _name: &str, f: F) -> EncodeResult<()> where
         F: FnOnce(&mut Encoder) -> EncodeResult<()>,
     {
-        Err(EncodeNotImplemented("Encode not implemented for enum".to_string()))
+        println!("Emit enum {}", _name);
+        f(self).unwrap();
+        Ok(())
     }
 
     fn emit_enum_variant<F>(&mut self,
-                            _: &str, // name
+                            name: &str, // name
                             _id: usize,
-                            _: usize, // cnt
-                            _: F) //f
+                            _cnt: usize, // cnt
+                            _f: F) //f
                             -> EncodeResult<()> where
         F: FnOnce(&mut Encoder) -> EncodeResult<()>,
     {
-        Err(EncodeNotImplemented("Encode not implemented for enum variant".to_string()))
+        println!("Emit enum variant {}", name);
+        self.emit(MessageItem::Str(
+            name.to_ascii_lowercase().to_string())).unwrap();
+        Ok(())
     }
 
     fn emit_enum_variant_arg<F>(&mut self, _: usize, _: F) -> EncodeResult<()> where
         F: FnOnce(&mut Encoder) -> EncodeResult<()>,
     {
+        println!("Emit enum variant arg");
         Err(EncodeNotImplemented("Encode not implemented for enum variant arg".to_string()))
     }
 
     fn emit_enum_struct_variant<F>(&mut self,
-                                   _: &str, //name
+                                   _name: &str, //name
                                    _: usize, // id
                                    _: usize, // cnt
-                                   _: F) -> EncodeResult<()> where
+                                   f: F) -> EncodeResult<()> where
         F: FnOnce(&mut Encoder) -> EncodeResult<()>,
     {
-        Err(EncodeNotImplemented("Encode not implemented for enum struct variant".to_string()))
+        println!("Emit enum struct variant {}", _name);
+        let mut encoder=Encoder{r: EncoderValue::Struct(vec![])};
+        try!(f(&mut encoder));
+        self.emit(try!(encoder.value()))
     }
 
     fn emit_enum_struct_variant_field<F>(&mut self,
-                                         _: &str,
+                                         _name: &str,
                                          _: usize,
-                                         _: F) -> EncodeResult<()> where
+                                         f: F) -> EncodeResult<()> where
         F: FnOnce(&mut Encoder) -> EncodeResult<()>,
     {
-        Err(EncodeNotImplemented("Encode not implemented for enum struct variant field".to_string()))
+        println!("Emit enum struct variant field {}", _name);
+        f(self).unwrap();
+        Ok(())
     }
 
 
@@ -637,9 +650,23 @@ mod tests {
     // }
 
     #[test]
-    fn encode_int_field() {
+    fn encode_struct_with_int_field() {
         let ifield = IntField{i: 42};
         let v = encode(&ifield).unwrap();
         assert_eq!(MessageItem::Struct(vec![MessageItem::Int64(42)]), v);
     }
+
+    #[derive(RustcDecodable, RustcEncodable)]
+    enum TestEnum{
+        A,
+        B
+    }
+
+    #[test]
+    fn encode_enum() {
+        let e = TestEnum::A;
+        let v = encode(&e).unwrap();
+        assert_eq!(MessageItem::Str("A".to_string()), v);
+    }
+
 }

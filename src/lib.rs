@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // #![deny(missing_docs)] can not do this yet due to macro issues
-#![feature(core, libc)]
+#![feature(core, libc, std_misc)]
 
 //! Rust API for Systemd commands via DBus.
 //!
@@ -26,6 +26,7 @@ extern crate "rustc-serialize" as rustc_serialize;
 extern crate "dbus-rs" as dbus;
 
 use std::{error,fmt};
+use std::fmt::Display;
 use std::slice::SliceConcatExt;
 use serialize::{decode};
 
@@ -48,6 +49,18 @@ pub enum SystemdError{
     InvalidArg(String),
     /// Catch all error type
     UnspecifiedError(String)
+}
+
+impl Display for SystemdError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(),fmt::Error> {
+        write!(f, "{:?}", *self)
+    }
+}
+
+impl error::Error for SystemdError {
+    fn description(&self) -> &str {
+        "Systemd error"
+    }
 }
 
 impl error::FromError<dbus::Error> for SystemdError {
@@ -170,6 +183,24 @@ pub struct UnitProperty {
 pub struct UnitAux {
     name: String,
     properties: Vec<UnitProperty>
+}
+
+/// Unit Mode
+#[derive(RustcDecodable,RustcEncodable,Debug)]
+pub enum Mode {
+    /// The call will start the unit and its dependencies, possibly
+    /// replacing already queued jobs that conflict with this.
+    Replace,
+    /// The call will start the unit and its dependencies, but will
+    /// fail if this would change an already queued job.
+    Fail,
+    /// The call will start the unit in question and terminate all
+    /// units that aren't dependencies of it.
+    Isolate,
+    /// The call will start a unit but ignore all its dependencies.
+    IgnoreDependencies,
+    /// The call will start a unit but only ignore the requirement dependencies
+    IgnoreRequirements
 }
 
 /// Match rules for notifications
@@ -351,30 +382,32 @@ impl<'a> Connection<'a> {
         try!(self.subscribe());
         Ok(())
     }
+
+
 }
 
 systemd_dbus!(bus, "GetUnit",get_unit(name: &str) -> ObjectPath);
 systemd_dbus!(bus, "GetUnitByPID",get_unit_by_pid(pid: u32) -> Vec<Job>);
 systemd_dbus!(bus, "LoadUnit",load_unit(name: String) -> ObjectPath);
 systemd_dbus!(bus, "StartUnit",
-              start_unit(name: String, mode: String) -> ObjectPath);
+              start_unit(name: String, mode: Mode) -> ObjectPath);
 systemd_dbus!(bus, "StartUnitRecplace",
               start_unit_replace(old_unit: String,
                                  new_unit: String,
-                                 mode: String) -> ObjectPath);
+                                 mode: Mode) -> ObjectPath);
 systemd_dbus!(bus, "StopUnit",
-              stop_unit(name: String, mode: String) -> ObjectPath);
+              stop_unit(name: String, mode: Mode) -> ObjectPath);
 systemd_dbus!(bus, "ReloadUnit",
-              reload_unit(name: String, mode: String) -> ObjectPath);
+              reload_unit(name: String, mode: Mode) -> ObjectPath);
 systemd_dbus!(bus, "RestartUnit",
-              restart_unit(name: String, mode: String) -> ObjectPath);
+              restart_unit(name: String, mode: Mode) -> ObjectPath);
 systemd_dbus!(bus, "TryRestartUnit",
-              try_restart_unit(name: String, mode: String) -> ObjectPath);
+              try_restart_unit(name: String, mode: Mode) -> ObjectPath);
 systemd_dbus!(bus, "ReloadOrRestartUnit",
-              reload_or_restart_unit(name: String, mode: String) -> ObjectPath);
+              reload_or_restart_unit(name: String, mode: Mode) -> ObjectPath);
 systemd_dbus!(bus, "ReloadOrTryRestartUnit",
               reload_or_try_restart_unit(name: String,
-                                         mode: String) -> ObjectPath);
+                                         mode: Mode) -> ObjectPath);
 systemd_dbus!(bus, "KillUnit",
               kill_unit(name: String, who: String, signal: u32) -> ObjectPath);
 systemd_dbus!(bus, "ResetFailedUnit",
@@ -440,7 +473,7 @@ systemd_dbus!(bus, "SetUnitProperties",
                                   properties: Vec<UnitProperty>));
 systemd_dbus!(bus, "SetTransientUnit",
               set_transient_unit(name: String,
-                                 mode: String,
+                                 mode: Mode,
                                  properties: Vec<UnitProperty>,
                                  aux: Vec<UnitAux>) -> ObjectPath);
 
@@ -448,6 +481,7 @@ systemd_dbus!(bus, "SetTransientUnit",
 #[cfg(test)]
 mod tests {
     use super::*;
+    use dbus::MessageItem;
 
     #[test]
     fn connection_test() {
@@ -510,5 +544,12 @@ mod tests {
         assert_eq!("type='a',interface='i'",
                    rule_string(&[Match::Type("a".to_string()),
                                  Match::Interface("i".to_string())]))
+    }
+
+
+    #[test]
+    fn encode_mode_test() {
+        assert_eq!(MessageItem::Str("replace".to_string()),
+                   serialize::encode(&Mode::Replace).unwrap())
     }
 }
